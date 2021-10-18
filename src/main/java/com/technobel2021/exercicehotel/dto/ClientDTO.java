@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.Set;
 
+@Data
 public class ClientDTO {
 
     private long id;

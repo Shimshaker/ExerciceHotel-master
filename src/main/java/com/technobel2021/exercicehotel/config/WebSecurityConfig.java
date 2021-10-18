@@ -1,11 +1,14 @@
 package com.technobel2021.exercicehotel.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -31,6 +34,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception{
         http.csrf().disable();
@@ -50,12 +59,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/chambre/**").hasAuthority("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/chambre/**").hasAuthority("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/chambre/**").hasAuthority("ADMIN")
+
+                .antMatchers(HttpMethod.GET, "/user/**").hasAnyAuthority("ADMIN", "USER")
+                .antMatchers(HttpMethod.POST, "/user/**").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/user/**").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/user/**").hasAuthority("ADMIN")
                 .anyRequest().permitAll();
 
+        http.addFilter(new JwtAthorizationsFilter(provider),
+
+        http.sessionManagement()
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // Pour H2
         http.headers()
                 .frameOptions()
                 .disable();
+
+
+
     }
 
 }

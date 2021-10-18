@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
+@Data
 public class ReservationDTO {
 
 
